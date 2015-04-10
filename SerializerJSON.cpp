@@ -37,6 +37,16 @@ shared_ptr<WSObj> WSObjDict_JSON::objForKey(string const &key) {
     return WSObj_JSON::factory(tok);
 }
 
+WSObj *WSObjDict_JSON::clone() const {
+    //Todo to be implemented
+    return nullptr;
+}
+
+WSObj *WSObjDict_JSON::moveClone() {
+    //Todo to be implemented
+    return nullptr;
+}
+
 shared_ptr<WSObj> WSObjArray_JSON::objAtIndex(int const &index) {
 
     ostringstream indxString;
@@ -50,82 +60,41 @@ shared_ptr<WSObj> WSObjArray_JSON::objAtIndex(int const &index) {
     return WSObj_JSON::factory(tok);
 }
 
-string WSObjNumeric_JSON::toString() const {
-    string s(token->ptr,(unsigned long) token->len);
-    return s;
-}
-
 string WSObjArray_JSON::toString() const {
     string s(token->ptr,(unsigned long) token->len);
     return s;
 }
 
-string WSObjString_JSON::toString() const {
-    string s(token->ptr,(unsigned long) token->len);
-    return s;
-}
-
-string SerializerJson::serialize(shared_ptr<WSObj> o) {
-    oss.str("");
-    oss.clear();
-    _serialize(o);
-    return oss.str();
-}
-
-void SerializerJson::_serialize(shared_ptr<WSObjString> o) {
-    oss << "\"" << o->toString() << "\"";
-}
-
-void SerializerJson::_serialize(shared_ptr<WSObjNumeric> o) {
-    oss << o->toString();
-}
-
-
-void SerializerJson::_serialize(shared_ptr<WSObjArray> o) {
-    shared_ptr<WSObj> cur;
-    oss << "[";
-    for (int i=0; i < o->size(); i++) {
-        if (i>0)
-            oss << ", ";
-        cur = o->objAtIndex(i);
-        _serialize(cur);
-    }
-    oss << "]";
- }
-
-void SerializerJson::_serialize(shared_ptr<WSObjDict> o) {
-    oss << *o;
-}
-
 int WSObjArray_JSON::size() {
-    int count=0;
+    int count= token->num_desc;
 
     for (int i=1; i < token->num_desc;) {
-        count++;
-        if (token[i].num_desc >0)
+        if (token[i].num_desc >0) {
+            count -= token[i].num_desc;
             i = i + token[i].num_desc;
+        }
         else
             i++;
     }
 
     return count;
 }
-
-void SerializerJson::_serialize(shared_ptr<WSObj> o) {
-    switch (o->objType()) {
-        case WS_TYPE_STRING:
-            _serialize(dynamic_pointer_cast<WSObjString>(o));
-            break;
-        case WS_TYPE_ARRAY:
-            _serialize(dynamic_pointer_cast<WSObjArray>(o));
-            break;
-        case WS_TYPE_NUMBER:
-            _serialize(dynamic_pointer_cast<WSObjNumeric>(o));
-            break;
-        case WS_TYPE_DICT:
-            _serialize(dynamic_pointer_cast<WSObjDict>(o));
-    }
+string WSObjNumeric_JSON::toString() const {
+    string s(token->ptr,(unsigned long) token->len);
+    return s;
 }
 
+WSObj *WSObjNumeric_JSON::clone() const {
+    //Todo to be implemented
+    return nullptr;
+}
 
+WSObj *WSObjNumeric_JSON::moveClone() {
+    //Todo to be implemented
+    return nullptr;
+}
 
+string WSObjString_JSON::toString() const {
+    string s(token->ptr,(unsigned long) token->len);
+    return s;
+}

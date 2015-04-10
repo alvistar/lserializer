@@ -27,6 +27,10 @@ class WSObjNumeric_JSON:virtual public WSObj_JSON, virtual public WSObjNumeric {
 public:
     WSObjNumeric_JSON(json_token *token) : WSObj_JSON(token) { }
 
+    virtual WSObj *clone() const override;
+
+    virtual WSObj *moveClone() override;
+
     virtual string toString() const override;
 };
 
@@ -47,8 +51,14 @@ public:
 
     WSObjArray_JSON(json_token *token) : WSObj_JSON(token) { };
     virtual shared_ptr<WSObj> objAtIndex(int const &index);
-
     virtual int size() override;
+    virtual WSObj * clone() const override {
+        return new WSObjArray_JSON (*this);
+    }
+
+    virtual WSObj *moveClone() override {
+        return new WSObjArray_JSON(move(*this));
+    }
 };
 
 class WSObjDict_JSON:public virtual WSObj_JSON, virtual public WSObjDict {
@@ -57,19 +67,10 @@ public:
     WSObjDict_JSON(json_token *token) : WSObj_JSON(token) { }
     virtual string toString() const override;
     virtual shared_ptr<WSObj> objForKey(string const &key) override;
-};
 
+    virtual WSObj *clone() const override;
 
-class SerializerJson {
-private:
-    ostringstream oss;
-    void _serialize(shared_ptr<WSObjString> o);
-    void _serialize(shared_ptr<WSObjNumeric> o);
-    void _serialize(shared_ptr<WSObjArray> o);
-    void _serialize(shared_ptr<WSObjDict> o);
-    void _serialize(shared_ptr<WSObj> o);
-public:
-    string serialize(shared_ptr<WSObj> o);
+    virtual WSObj *moveClone() override;
 };
 
 
