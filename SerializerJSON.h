@@ -7,31 +7,38 @@
 #include <vector>
 #include <iostream>
 
+
+
 #ifndef LSERIALIZER_SERIALIZERJSON_H
 #define LSERIALIZER_SERIALIZERJSON_H
-
 
 class WSObj_JSON:virtual public WSObj {
 protected:
     struct json_token *token;
 public:
     WSObj_JSON(struct json_token *token):token(token) {};
-    static shared_ptr<WSObj> factory(char const *msg);
-    static shared_ptr<WSObj> factory(struct json_token *token);
+    virtual ~WSObj_JSON() {};
+
+    static unique_ptr<WSObj> factory(const char* msg);
+    static unique_ptr<WSObj> factory(struct json_token *token);
     //virtual enum wamp_serializer_type objType();
     virtual string toString() const override = 0;
+
 };
 
 class WSObjNumeric_JSON:virtual public WSObj_JSON, virtual public WSObjNumeric {
 
 public:
     WSObjNumeric_JSON(json_token *token) : WSObj_JSON(token) { }
+    virtual ~WSObjNumeric_JSON() { }
 
     virtual WSObj *clone() const override;
 
     virtual WSObj *moveClone() override;
-
     virtual string toString() const override;
+
+    operator int() const override;
+    operator float() const override;
 };
 
 class WSObjString_JSON :virtual public WSObj_JSON, virtual public WSObjString {
@@ -39,40 +46,63 @@ class WSObjString_JSON :virtual public WSObj_JSON, virtual public WSObjString {
 public:
     WSObjString_JSON(json_token *token) : WSObj_JSON(token) { }
 
+    virtual ~WSObjString_JSON() { }
+
     virtual string toString() const override;
+
 };
 
-
 class WSObjArray_JSON:public virtual WSObj_JSON, virtual public WSObjArray {
+private:
+    unordered_map<int,unique_ptr<WSObj>> data;
 
 public:
-
-    virtual string toString() const override;
-
+    //Constructors
     WSObjArray_JSON(json_token *token) : WSObj_JSON(token) { };
-    virtual shared_ptr<WSObj> objAtIndex(int const &index);
-    virtual int size() override;
-    virtual WSObj * clone() const override {
-        return new WSObjArray_JSON (*this);
-    }
+    WSObjArray_JSON(const WSObjArray_JSON & o):WSObj_JSON(o.token) {};
+    virtual ~WSObjArray_JSON() { }
 
-    virtual WSObj *moveClone() override {
-        return new WSObjArray_JSON(move(*this));
-    }
+//Methods
+    virtual string toString() const override;
+    virtual WSObj & objAtIndex(int const &index);
+    virtual int size() override;
+
+    virtual WSObj * clone() const override;
+    virtual WSObj *moveClone() override;
 };
 
 class WSObjDict_JSON:public virtual WSObj_JSON, virtual public WSObjDict {
-
+private:
+    unordered_map<string,unique_ptr<WSObj>> data;
 public:
+    //Constructors
     WSObjDict_JSON(json_token *token) : WSObj_JSON(token) { }
+    WSObjDict_JSON(const WSObjDict_JSON &o):WSObjDict_JSON(o.token) {};
+    virtual ~WSObjDict_JSON() { }
+
+    //Methods
+
     virtual string toString() const override;
-    virtual shared_ptr<WSObj> objForKey(string const &key) override;
+    virtual WSObj& objForKey(string const &key) override;
 
     virtual WSObj *clone() const override;
 
     virtual WSObj *moveClone() override;
 };
 
+//Deserializer
+
+class Deserializer {
+private:
+    string input;
+    unique_ptr<WSObj> root;
+public:
+    WSObj & deserialize(const string &input);
+    WSObj & deserialize(string &&input);
+
+
+    virtual ~Deserializer() { }
+};
 
 #endif //LSERIALIZER_SERIALIZERJSON_H
 

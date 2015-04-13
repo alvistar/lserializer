@@ -7,57 +7,85 @@
 #include <sstream>
 #include <memory>
 
-
-shared_ptr<WSObj> WSObj_JSON::factory(char const *msg) {
+unique_ptr<WSObj> WSObj_JSON::factory(const char* msg) {
     struct json_token *token = parse_json2(msg, (int) strlen(msg));
+    //WSObj_JSON::factory(token);
 
     return WSObj_JSON::factory(token);
 }
 
-shared_ptr<WSObj> WSObj_JSON::factory(struct json_token *token) {
+unique_ptr<WSObj> WSObj_JSON::factory(struct json_token *token) {
     switch (token->type) {
         case JSON_TYPE_ARRAY:
-            return shared_ptr<WSObj> (new WSObjArray_JSON(token));
+            return unique_ptr<WSObj> (new WSObjArray_JSON(token));
         case JSON_TYPE_NUMBER:
-            return shared_ptr<WSObj> (new WSObjNumeric_JSON(token));
+            return unique_ptr<WSObj> (new WSObjNumeric_JSON(token));
         case JSON_TYPE_STRING:
-            return shared_ptr<WSObj> (new WSObjString_JSON(token));
+            return unique_ptr<WSObj> (new WSObjString_JSON(token));
         case JSON_TYPE_OBJECT:
-            return shared_ptr<WSObj> (new WSObjDict_JSON(token));
+            return unique_ptr<WSObj> (new WSObjDict_JSON(token));
+        default:
+            throw (new WSException());
     };
 }
+
+//WSOBJDICT Methods
+//-----------------
 
 string WSObjDict_JSON::toString() const {
     string s(token->ptr,(unsigned long) token->len);
     return s;
 }
 
-shared_ptr<WSObj> WSObjDict_JSON::objForKey(string const &key) {
-    struct json_token * tok = find_json_token(token, key.c_str());
-    return WSObj_JSON::factory(tok);
+WSObj & WSObjDict_JSON::objForKey(string const &key) {
+    try {
+        return *data.at(key);
+    }
+    catch (std::out_of_range) {
+        struct json_token * tok = find_json_token(token, key.c_str());
+
+        if (tok == NULL)
+            throw WSOutOfIndexException();
+
+        auto p = WSObj_JSON::factory(tok);
+        auto rawp = p.get();
+        data[key] = move(p);
+        return *rawp;
+    }
 }
 
 WSObj *WSObjDict_JSON::clone() const {
-    //Todo to be implemented
-    return nullptr;
+    CLOG(DEBUG,"wserialize") << "Cloning " << *this << endl;
+    return new WSObjDict_JSON (*this);
 }
 
 WSObj *WSObjDict_JSON::moveClone() {
-    //Todo to be implemented
-    return nullptr;
+    return new WSObjDict_JSON(move(*this));
 }
 
-shared_ptr<WSObj> WSObjArray_JSON::objAtIndex(int const &index) {
+//WSObjArray_JSON Methods
+//-----------------------
 
-    ostringstream indxString;
+WSObj& WSObjArray_JSON::objAtIndex(int const &index) {
+    try {
+        return *data.at(index);
+    }
+    catch (std::out_of_range) {
+        ostringstream indxString;
 
-    indxString << "[" << index << "]";
-    struct json_token * tok = find_json_token(token, indxString.str().c_str());
+        indxString << "[" << index << "]";
+        struct json_token *tok = find_json_token(token, indxString.str().c_str());
 
-    if (tok == NULL)
-        throw WSArrayOutOfIndexException();
+        if (tok == NULL)
+            throw WSOutOfIndexException();
 
-    return WSObj_JSON::factory(tok);
+        auto p = WSObj_JSON::factory(tok);
+        auto rawp = p.get();
+        data[index] = move(p);
+        return *rawp;
+    }
+
+
 }
 
 string WSObjArray_JSON::toString() const {
@@ -79,22 +107,55 @@ int WSObjArray_JSON::size() {
 
     return count;
 }
+
+WSObj* WSObjArray_JSON::clone() const  {
+    CLOG(DEBUG,"wserialize") << "Cloning " << *this << endl;
+    return new WSObjArray_JSON (*this);
+}
+
+WSObj* WSObjArray_JSON::moveClone()  {
+    return new WSObjArray_JSON(move(*this));
+}
+
 string WSObjNumeric_JSON::toString() const {
     string s(token->ptr,(unsigned long) token->len);
     return s;
 }
 
 WSObj *WSObjNumeric_JSON::clone() const {
-    //Todo to be implemented
-    return nullptr;
+    CLOG(DEBUG,"wserialize") << "Cloning " << *this << endl;
+    return new WSObjNumeric_JSON(*this);
 }
 
 WSObj *WSObjNumeric_JSON::moveClone() {
-    //Todo to be implemented
-    return nullptr;
+    return new WSObjNumeric_JSON(move(*this));
 }
 
 string WSObjString_JSON::toString() const {
     string s(token->ptr,(unsigned long) token->len);
     return s;
+}
+
+WSObj & Deserializer::deserialize(const string &input) {
+    this->input = input;
+
+    root= WSObj_JSON::factory(this->input.c_str());
+
+    return * root;
+};
+
+WSObj & Deserializer::deserialize(string &&input) {
+    this->input = move(input);
+    root= WSObj_JSON::factory(this->input.c_str());
+    return * root;
+}
+
+WSObjNumeric_JSON::operator int() const {
+    string s(token->ptr,(unsigned long) token->len);
+    return stoi(s);
+}
+
+WSObjNumeric_JSON::operator float() const {
+    string s(token->ptr,(unsigned long) token->len);
+    return stof(s);
 }
