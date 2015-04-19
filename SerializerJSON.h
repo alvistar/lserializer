@@ -3,9 +3,13 @@
 //
 
 #include "Serializer.h"
+#include "WSArray.h"
+#include "WSDict.h"
+
 #include <alvistar/frozen/frozen.h>
 #include <vector>
 #include <iostream>
+
 
 
 
@@ -21,27 +25,27 @@ public:
 
     static unique_ptr<WSObj> factory(const char* msg);
     static unique_ptr<WSObj> factory(struct json_token *token);
-    //virtual enum wamp_serializer_type objType();
     virtual string toString() const override = 0;
 
 };
 
-class WSObjNumeric_JSON:virtual public WSObj_JSON, virtual public WSObjNumeric {
+class WSObjNumeric_JSON:virtual public WSObj_JSON, virtual public WSNumeric {
 
 public:
     WSObjNumeric_JSON(json_token *token) : WSObj_JSON(token) { }
     virtual ~WSObjNumeric_JSON() { }
 
-    virtual WSObj *clone() const override;
+    WSObj *clone() const override;
 
-    virtual WSObj *moveClone() override;
-    virtual string toString() const override;
+    WSObj *moveClone() override;
+    string toString() const override;
 
     operator int() const override;
     operator float() const override;
+    operator unsigned long long int() const override;
 };
 
-class WSObjString_JSON :virtual public WSObj_JSON, virtual public WSObjString {
+class WSObjString_JSON :virtual public WSObj_JSON, virtual public WSString {
 
 public:
     WSObjString_JSON(json_token *token) : WSObj_JSON(token) { }
@@ -52,7 +56,7 @@ public:
 
 };
 
-class WSObjArray_JSON:public virtual WSObj_JSON, virtual public WSObjArray {
+class WSObjArray_JSON:public virtual WSObj_JSON, virtual public WSArray {
 private:
     unordered_map<int,unique_ptr<WSObj>> data;
 
@@ -64,14 +68,14 @@ public:
 
 //Methods
     virtual string toString() const override;
-    virtual WSObj & objAtIndex(int const &index);
+    virtual WSObj & at(int const &index) override;
     virtual int size() override;
 
     virtual WSObj * clone() const override;
     virtual WSObj *moveClone() override;
 };
 
-class WSObjDict_JSON:public virtual WSObj_JSON, virtual public WSObjDict {
+class WSObjDict_JSON:public virtual WSObj_JSON, virtual public WSDict {
 private:
     unordered_map<string,unique_ptr<WSObj>> data;
 public:
@@ -83,7 +87,7 @@ public:
     //Methods
 
     virtual string toString() const override;
-    virtual WSObj& objForKey(string const &key) override;
+    virtual WSObj& at(string const &key) override;
 
     virtual WSObj *clone() const override;
 

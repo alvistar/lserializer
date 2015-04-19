@@ -37,7 +37,7 @@ string WSObjDict_JSON::toString() const {
     return s;
 }
 
-WSObj & WSObjDict_JSON::objForKey(string const &key) {
+WSObj & WSObjDict_JSON::at(string const &key) {
     try {
         return *data.at(key);
     }
@@ -66,7 +66,7 @@ WSObj *WSObjDict_JSON::moveClone() {
 //WSObjArray_JSON Methods
 //-----------------------
 
-WSObj& WSObjArray_JSON::objAtIndex(int const &index) {
+WSObj& WSObjArray_JSON::at(int const &index) {
     try {
         return *data.at(index);
     }
@@ -158,4 +158,9 @@ WSObjNumeric_JSON::operator int() const {
 WSObjNumeric_JSON::operator float() const {
     string s(token->ptr,(unsigned long) token->len);
     return stof(s);
+}
+
+WSObjNumeric_JSON::operator unsigned long long int() const {
+    string s(token->ptr,(unsigned long) token->len);
+    return stoull(s);
 }

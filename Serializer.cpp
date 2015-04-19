@@ -1,26 +1,24 @@
 #include "Serializer.h"
+#include "WSArray.h"
+#include "WSDict.h"
 
 namespace wserializer {
     el::Logger * wslogger = el::Loggers::getLogger("wserializer");
 }
 
-WSObjArray &WSObj::toArray() {
-    if (this->objType() != WS_TYPE_ARRAY)
-        throw WSObjectIsNotArrayException();
+WSArray &WSObj::toArray() {
+    throw WSObjectIsNotArrayException();
 
-    return dynamic_cast<WSObjArray&> (*this);
 }
 
-WSObjDict &WSObj::toDict() {
-    if (this->objType() != WS_TYPE_DICT)
-        throw WSObjectIsNotDictException();
-    return dynamic_cast<WSObjDict&> (*this);
+WSDict &WSObj::toDict() {
+    throw WSObjectIsNotDictException();
 }
 
-WSObjNumeric &WSObj::toNumeric() const {
-    if (this->objType() != WS_TYPE_NUMBER)
-        throw WSObjectIsNotNumException();
-
-    return (WSObjNumeric&) dynamic_cast<const WSObjNumeric&> (*this);
+WSObj::operator WSArray() const {
+    throw WSObjectIsNotArrayException();
 }
 
+WSObj::operator WSDict() const {
+    throw WSObjectIsNotDictException();
+}
