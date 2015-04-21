@@ -69,7 +69,7 @@ public:
 //Methods
     virtual string toString() const override;
     virtual WSObj & at(int const &index) override;
-    virtual int size() override;
+    virtual int size() const override;
 
     virtual WSObj * clone() const override;
     virtual WSObj *moveClone() override;

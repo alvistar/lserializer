@@ -93,7 +93,7 @@ string WSObjArray_JSON::toString() const {
     return s;
 }
 
-int WSObjArray_JSON::size() {
+int WSObjArray_JSON::size() const {
     int count= token->num_desc;
 
     for (int i=1; i < token->num_desc;) {

@@ -6,19 +6,18 @@ namespace wserializer {
     el::Logger * wslogger = el::Loggers::getLogger("wserializer");
 }
 
-WSArray &WSObj::toArray() {
-    throw WSObjectIsNotArrayException();
-
-}
-
-WSDict &WSObj::toDict() {
-    throw WSObjectIsNotDictException();
-}
-
-WSObj::operator WSArray() const {
+WSArray &WSObj::toArray() const {
     throw WSObjectIsNotArrayException();
 }
 
-WSObj::operator WSDict() const {
+WSDict &WSObj::toDict() const {
     throw WSObjectIsNotDictException();
+}
+
+WSObj::operator WSArray&() const {
+    return this->toArray();
+}
+
+WSObj::operator WSDict&() const {
+    return this->toDict();
 }

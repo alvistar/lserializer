@@ -7,15 +7,14 @@
 class WSArray :public virtual WSObj {
 public:
     virtual ~WSArray() { }
-    virtual WSObj &at(int const &index) = 0;
-    virtual int size() = 0;
+    virtual WSObj &at(int const &index) = 0; //Cannot be const for Json Implementation
+    virtual int size() const = 0;
     virtual enum wamp_serializer_type objType() const override {
         return WS_TYPE_ARRAY;
     }
 
-    virtual WSArray &toArray() override {
-        return *this;
-        //return dynamic_cast<WSArray &> (*this);
+    virtual WSArray &toArray() const override {
+        return (WSArray&) *this;
     }
 };
 
@@ -40,14 +39,14 @@ public:
     }
 
     virtual WSObj&at(int const &index) override {
-        return data[index];
+        return (WSObj&) data[index];
     }
 
     void push_back(WSObjM const& e) {
         data.push_back(e);
     }
 
-    virtual int size() override {
+    virtual int size() const override {
         return (int) data.size();
     }
 

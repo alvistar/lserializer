@@ -90,9 +90,9 @@ public:
 
     virtual enum wamp_serializer_type objType() const = 0;
 
-    virtual WSArray & toArray ();
+    virtual WSArray & toArray() const;
 
-    virtual WSDict & toDict();
+    virtual WSDict & toDict() const;
 
     virtual string toString() const= 0;
 
@@ -108,9 +108,9 @@ public:
         return toString();
     }
 
-    virtual operator WSArray() const;
+    operator WSArray&() const;
 
-    virtual operator WSDict() const;
+    operator WSDict&() const;
 
     virtual operator int() const {
         throw WSObjectIsNotNumException();

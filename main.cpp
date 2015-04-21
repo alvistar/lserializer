@@ -8,20 +8,28 @@
  */
 
 #include <iostream>
+#include <assert.h>
 #include "SerializerJSON.h"
 #include "Serializer.h"
-
+#include "alvistar/wamp/RegisteredProcedures.h"
 INITIALIZE_EASYLOGGINGPP
+
+int add (int a, int b) {
+    return a+b;
+}
+
+int add2 (int a, int b, WSArray& arr) {
+    cout << arr << endl;
+    return a+b;
+}
+
 int main() {
-    std::cout << "Hello world!\n";
 
-    WSObjM o {1};
+    WSArrayM arr {5,6, WSArrayM {5,6}};
 
-    cout << o << endl;
+    auto rp = make_RegisteredProcedure(add);
 
-    WSArrayM arr {{1,2.5,3,"pino",WSArrayM{3,4,5}}};
+    WSArrayM arr2 {4,"pino"};
 
-    WSArrayM arr2 {4,5,6};
-    cout << "Array: " << arr << endl;
-
+    cout << rp->invoke(arr2);
 };

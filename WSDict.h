@@ -5,38 +5,6 @@
 #ifndef CPPWAMP_WSDICT_H
 #define CPPWAMP_WSDICT_H
 
-//class WSPair
-//{
-//public:
-//    string first;
-//    unique_ptr<WSObj> second;
-//
-//    WSPair(const string& first, const WSObj & sec):first(first) {
-//        second = unique_ptr<WSObj> (sec.clone());
-//    }
-//
-//    WSPair(const string& first, WSObj && sec):first(first) {
-//        second = unique_ptr<WSObj> (sec.moveClone());
-//    }
-//
-//    WSPair(const string& first, WSObjString&& sec):first(first) {
-//        second = unique_ptr<WSObj>(new WSObjString(forward<WSObjString>(sec)));
-//    }
-//
-//    WSPair(const string& first, const WSDict & sec):first(first) {
-//        second = unique_ptr<WSObj> (sec.clone());;
-//    }
-//
-//    WSPair(const string& first, WSDict && sec):first(first) {
-//        second = unique_ptr<WSObj> (sec.moveClone());;
-//    }
-//
-//    template <typename T, typename enable_if <is_arithmetic<T>::value, int>::type = 0>
-//    WSPair(const string& first, T&& sec):first(first) {
-//        second = unique_ptr<WSObj>(new WSNumericM<T>(sec));
-//    }
-//};
-
 class WSDict :public virtual WSObj {
 public:
     virtual ~WSDict() { }
@@ -46,8 +14,8 @@ public:
         return WS_TYPE_DICT;
     }
 
-    virtual WSDict &toDict() override {
-        return *this;
+    virtual WSDict &toDict() const override {
+        return (WSDict&) *this;
     }
 };
 
@@ -212,5 +180,4 @@ public:
 //};
 
 #endif //CPPWAMP_WSDICT_H
-
 

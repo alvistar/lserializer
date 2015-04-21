@@ -35,20 +35,15 @@ public:
         _objType = WS_TYPE_STRING;
     }
 
-    //Constructor from base WSArray -- need to dynamic cast to WSArrayM to be correctly copied
     WSObjM(const WSArray& arr);
-
-    WSObjM(const WSArrayM& arr);
 
     WSObjM(const WSDict& arr);
 
-    WSObjM(const WSDictM& dict);
-
     //Casting methods
 
-    virtual operator WSArray() const override;
+    virtual WSArray &toArray() const override;
 
-    virtual operator WSDict() const override;
+    virtual WSDict &toDict() const override;
 
     virtual operator int() const override;
 
