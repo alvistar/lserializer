@@ -24,6 +24,7 @@ private:
     vector<WSObjM> data;
 public:
     WSArrayM() {};
+
     WSArrayM(std::initializer_list<WSObjM> list) {
         for (auto& e:list) {
             data.push_back(e);
@@ -48,6 +49,10 @@ public:
 
     virtual int size() override {
         return (int) data.size();
+    }
+
+    void clear() {
+        data.clear();
     }
 
     virtual string toString() const override {

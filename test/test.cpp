@@ -95,6 +95,30 @@ TEST(WArrayM, copying) {
     ASSERT_STREQ(arr.toString().c_str(), arr2.toString().c_str());
 }
 
+TEST(WDictM, addingIntegers) {
+    Deserializer d;
+
+    WSDictM dict {{"height","25"}};
+    dict.insert({"width","32"});
+
+    auto &obj = d.deserialize(dict);
+
+    ASSERT_STREQ(obj.toString().c_str(), dict.toString().c_str());
+}
+
+TEST(WDictM, addingDict) {
+    Deserializer d;
+
+    WSDictM dict {{"height","25"}};
+    WSDictM dict2 {{"apple","25"}};
+
+    dict.insert({"fruits",dict2});
+
+    auto &obj = d.deserialize(dict);
+
+    ASSERT_STREQ(obj.toString().c_str(), dict.toString().c_str());
+}
+
 TEST(WArrayM, addingIntegers) {
     WSArrayM arr {1,2,3};
     ASSERT_STREQ("[1, 2, 3]", arr.toString().c_str());

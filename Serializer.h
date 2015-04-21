@@ -83,9 +83,6 @@ class WSArray;
 class WSNumeric;
 class WSDict;
 
-
-
-
 class WSObj  {
 public:
 
@@ -166,9 +163,7 @@ public:
     virtual enum wamp_serializer_type objType() const override {
         return WS_TYPE_NUMBER;
     }
-
 };
-
 
 template <typename  T>
 class WSNumericM :public virtual WSNumeric {
@@ -206,154 +201,6 @@ public:
 
     operator unsigned long long int() const override {return data;};
 };
-
-//class WSArrayM :public virtual WSArray {
-//private:
-//    vector<unique_ptr<WSObj>> data;
-//
-//    template <typename T, typename enable_if <is_arithmetic<T>::value, int>::type = 0>
-//    void pb(const T & num) {
-//        unique_ptr<WSObj> o (new WSNumericM<T>(num));
-//        data.push_back(move(o));
-//    }
-//
-//    void pb(const WSObj &obj) {
-//        unique_ptr<WSObj> o (obj.clone());
-//        data.push_back(move(o));
-//    }
-//
-//    void pb(WSObj &&obj) {
-//        unique_ptr<WSObj> o (obj.moveClone());
-//        data.push_back(move(o));
-//    }
-//
-//    virtual void pb(const WSObjString &obj) {
-//        unique_ptr<WSObj> o (obj.clone());
-//        data.push_back(move(o));
-//    }
-//
-//    virtual void pb(WSObjString &&obj) {
-//        unique_ptr<WSObj> o (obj.moveClone());
-//        data.push_back(move(o));
-//    }
-//
-//public:
-//    // Constructors
-//    WSArrayM() {};
-//
-//    // Copy Constructor
-//    WSArrayM(const WSArrayM & o) {
-//        CLOG(DEBUG,"wserializer") << "Deep Copying:" << o << endl;
-//
-//        for (auto &e:o.data) {
-//            push_back(*e);
-//        }
-//
-//        CLOG(DEBUG,"wserializer") << "New log:" << *this;
-//    };
-//
-//    WSArrayM(WSArrayM && o):data(move(o.data)) {
-//
-//        o.data.clear();
-//    };
-//
-////    template <typename ... ARGS>
-////    WSArrayM(ARGS&& ... args) {
-////        LOG(DEBUG) << "Called normal constructor";
-////        push_back(forward<ARGS> (args) ...);
-////    }
-//
-//    WSArrayM(std::initializer_list<WSObjM> list) {
-//        for (auto &e: list)
-//            push_back(e);
-//    }
-//
-//    virtual WSObj * clone() const override {
-//        return new WSArrayM(*this);
-//    }
-//
-//    virtual WSObj *moveClone() override {
-//        return new WSArrayM(move(*this));
-//    }
-//
-//    template <typename T>
-//    void push_back(T&& obj) {
-//        pb(forward<T> (obj));
-//    }
-//
-//    template <typename T, typename ... OTHERS>
-//    void push_back(T&& first, OTHERS&& ...others) {
-//        push_back(forward<T>(first));
-//        push_back(forward<OTHERS>(others) ...);
-//    }
-//
-//    void clear() {
-//        data.clear();
-//    }
-//
-//    virtual WSObj& objAtIndex(int const &index) override {
-//        return *data[index];
-//    }
-//
-//    virtual int size() override {
-//        return (int) data.size();
-//    }
-//
-//    virtual string toString() const override {
-//        ostringstream oss;
-//        oss << "[";
-//        bool first = true;
-//        for (auto &e:data) {
-//            if (!first)
-//                oss << ", ";
-//            if (e->objType() == WS_TYPE_STRING)
-//                oss << "\"";
-//
-//            oss << e->toString();
-//
-//            if (e->objType() == WS_TYPE_STRING)
-//                oss << "\"";
-//
-//            first = false;
-//        }
-//        oss << "]";
-//        return oss.str();
-//    }
-//
-//    //Test
-//
-//
-//    template<std::size_t I = 0, typename... Tp>
-//    inline typename std::enable_if<I == sizeof...(Tp), void>::type
-//    convert_tuple(std::tuple<Tp...> &) // Unused arguments are given no names.
-//    { }
-//
-//    template<std::size_t I = 0, typename... Tp>
-//    inline typename std::enable_if<I < sizeof...(Tp), void>::type
-//    convert_tuple(std::tuple<Tp...>& t)
-//    {
-//        using T = typename std::tuple_element<I, std::tuple<Tp...>>::type;
-//
-//        T &el = std::get<I>(t);
-//        el = static_cast<T> (objAtIndex(I));
-//
-//        convert_tuple<I + 1, Tp...>(t);
-//    }
-//
-//    template <typename ... Ts>
-//    tuple <Ts ...> toTuple() {
-//
-//        tuple<Ts...> dest;
-//
-//        convert_tuple(dest);
-//
-//        return dest;
-//
-//    }
-//
-//};
-
-
 
 //namespace wserializer {
 //    extern el::Logger *wslogger;

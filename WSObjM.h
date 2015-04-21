@@ -7,6 +7,7 @@
 #define CPPWAMP_WSOBJM_H
 
 class WSArrayM;
+class WSDictM;
 
 class WSObjM : public virtual WSObj {
     using PTR = shared_ptr<WSObj>;
@@ -14,6 +15,10 @@ private:
     PTR obj;
     enum wamp_serializer_type _objType;
 public:
+    WSObjM() {
+        _objType = WS_TYPE_NULL;
+    }
+
     template <typename T, typename enable_if <is_arithmetic<T>::value, int>::type = 0>
     WSObjM(const T &v) {
         obj = shared_ptr<WSObj> (new WSNumericM<T>(v));
@@ -30,7 +35,14 @@ public:
         _objType = WS_TYPE_STRING;
     }
 
+    //Constructor from base WSArray -- need to dynamic cast to WSArrayM to be correctly copied
+    WSObjM(const WSArray& arr);
+
     WSObjM(const WSArrayM& arr);
+
+    WSObjM(const WSDict& arr);
+
+    WSObjM(const WSDictM& dict);
 
     //Casting methods
 
