@@ -19,7 +19,8 @@ enum wamp_serializer_type {
     WS_TYPE_NUMBER,
     WS_TYPE_DICT,
     WS_TYPE_ARRAY,
-    WS_TYPE_NULL
+    WS_TYPE_NULL,
+    WS_TYPE_BOOL
 };
 
 template<std::size_t I = 0, typename FuncT, typename... Tp>
@@ -73,6 +74,12 @@ class WSObjectIsNotNumException : public WSException{
     }
 };
 
+class WSObjectIsNotBoolException : public WSException{
+    virtual const char* what() const throw() {
+        return "Wamp Serializer Cannot Convert To Bool";
+    }
+};
+
 class WSDeserializeException : public WSException{
     virtual const char* what() const throw() {
         return "Wamp Serializer Error on Deserialization";
@@ -112,6 +119,10 @@ public:
 
     operator WSDict&() const;
 
+    virtual operator bool() const {
+        throw WSObjectIsNotBoolException();
+    }
+
     virtual operator int() const {
         throw WSObjectIsNotNumException();
     }
@@ -123,6 +134,39 @@ public:
     virtual operator unsigned long long int() const {
         throw WSObjectIsNotNumException();
     }
+};
+
+class WSBool: public virtual WSObj {
+private:
+    bool data;
+public:
+    WSBool(bool v):data(v) {};
+
+    virtual operator bool() const {
+        return data;
+    }
+
+    virtual enum wamp_serializer_type objType() const override {
+        return WS_TYPE_BOOL;
+    }
+
+    virtual WSObj * clone() const override {
+        CLOG(DEBUG,"wserializer") << "Cloning bool "<< *this;
+        return new WSBool(*this);
+    }
+
+    virtual WSObj *moveClone() override {
+        return new WSBool(move(*this));
+    }
+
+    virtual string toString() const override {
+        if (data)
+            return "true";
+        else
+            return "false";
+    }
+
+
 };
 
 class WSString :public virtual WSObj{

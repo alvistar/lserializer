@@ -6,9 +6,6 @@
 #include "WSArray.h"
 #include "WSDict.h"
 
-
-
-
 WSObjM::WSObjM(const WSArray & arr) {
      obj = shared_ptr<WSObj> (arr.clone());
     _objType = WS_TYPE_ARRAY;
@@ -20,6 +17,10 @@ WSObjM::WSObjM(const WSDict &dict) {
     _objType = WS_TYPE_DICT;
 }
 
+
+WSObjM::operator bool() const {
+    return (bool) *obj;
+}
 
 WSObjM::operator int() const {
     return (int) *obj;
@@ -41,4 +42,5 @@ WSArray &WSObjM::toArray() const {
 WSDict &WSObjM::toDict() const {
     return obj->toDict();
 }
+
 

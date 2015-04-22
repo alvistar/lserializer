@@ -19,6 +19,11 @@ public:
         _objType = WS_TYPE_NULL;
     }
 
+    WSObjM(bool b) {
+        obj = shared_ptr<WSObj> (new WSBool(b));
+        _objType = WS_TYPE_BOOL;
+    }
+
     template <typename T, typename enable_if <is_arithmetic<T>::value, int>::type = 0>
     WSObjM(const T &v) {
         obj = shared_ptr<WSObj> (new WSNumericM<T>(v));
@@ -45,6 +50,9 @@ public:
 
     virtual WSDict &toDict() const override;
 
+
+    virtual operator bool() const override;
+
     virtual operator int() const override;
 
     virtual operator float() const override;
@@ -56,7 +64,11 @@ public:
     }
 
     virtual string toString() const override {
-        return obj->toString();
+        if (_objType == WS_TYPE_NULL) {
+            return "null";
+        }
+        else
+            return obj->toString();
     }
 
     virtual WSObj *clone() const override {

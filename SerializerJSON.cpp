@@ -24,6 +24,10 @@ unique_ptr<WSObj> WSObj_JSON::factory(struct json_token *token) {
             return unique_ptr<WSObj> (new WSObjString_JSON(token));
         case JSON_TYPE_OBJECT:
             return unique_ptr<WSObj> (new WSObjDict_JSON(token));
+        case JSON_TYPE_TRUE:
+            return unique_ptr<WSObj> (new WSBool(true));
+        case JSON_TYPE_FALSE:
+            return unique_ptr<WSObj> (new WSBool(false));
         default:
             throw (new WSException());
     };
