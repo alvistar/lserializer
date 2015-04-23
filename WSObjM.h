@@ -2,6 +2,10 @@
 // Created by Alessandro Viganò on 19/04/15.
 //
 #include "Serializer.h"
+#include "WSObj.h"
+#include "WSBool.h"
+#include "WSNumeric.h"
+#include "WSString.h"
 
 #ifndef CPPWAMP_WSOBJM_H
 #define CPPWAMP_WSOBJM_H

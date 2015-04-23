@@ -142,9 +142,7 @@ string WSObjString_JSON::toString() const {
 
 WSObj & Deserializer::deserialize(const string &input) {
     this->input = input;
-
     root= WSObj_JSON::factory(this->input.c_str());
-
     return * root;
 };
 

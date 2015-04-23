@@ -1,10 +1,8 @@
-#include "Serializer.h"
-#include "WSArray.h"
-#include "WSDict.h"
+//
+// Created by Alessandro Viganò on 23/04/15.
+//
 
-namespace wserializer {
-    el::Logger * wslogger = el::Loggers::getLogger("wserializer");
-}
+#include "WSObj.h"
 
 WSArray &WSObj::toArray() const {
     throw WSObjectIsNotArrayException();
