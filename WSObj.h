@@ -11,23 +11,30 @@ class WSDict;
 
 class WSObj  {
 public:
-
     virtual ~WSObj() {};
 
-    virtual enum wamp_serializer_type objType() const = 0;
+    virtual enum wamp_serializer_type objType() const {
+        return WS_TYPE_NULL;
+    }
 
     virtual WSArray & toArray() const;
 
     virtual WSDict & toDict() const;
 
-    virtual string toString() const= 0;
+    virtual string toString() const {
+        return "null";
+    }
 
     friend std::ostream &operator << (std::ostream &os, const WSObj &o) {
         return os << string(o.toString());
     }
 
-    virtual WSObj * clone() const = 0;
-    virtual WSObj *moveClone() = 0;
+    virtual WSObj * clone() const {
+        return new WSObj(*this);
+    }
+    virtual WSObj *moveClone() {
+        return new WSObj(move(*this));
+    }
 
     //Casting operator
     virtual operator string() const  {

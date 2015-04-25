@@ -4,14 +4,18 @@
 
 INITIALIZE_EASYLOGGINGPP
 
-
-
 TEST(DeserializeJSON, array) {
     Deserializer d;
     auto &obj = d.deserialize({"[\"pino\",\"cedro\",1,2,3]"});
     ASSERT_STREQ("pino", obj.toArray().at(0).toString().c_str());
     ASSERT_STREQ("cedro", obj.toArray().at(1).toString().c_str());
     ASSERT_STREQ("3", obj.toArray().at(4).toString().c_str());
+}
+
+TEST(DeserializeJSON, null) {
+    Deserializer d;
+    auto &obj = d.deserialize({"[null]"});
+    ASSERT_EQ(WS_TYPE_NULL, obj.toArray().at(0).objType());
 }
 
 TEST(DeserializeJSON, bool) {
